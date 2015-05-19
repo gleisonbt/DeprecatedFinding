@@ -44,7 +44,6 @@ public class Main {
 
 		MethodVisitor visitor = new MethodVisitor();
 		compilationUnit.accept(visitor);
-
 		
 		
 		if (!visitor.getMethodsDeprecated().isEmpty()) {
@@ -125,9 +124,9 @@ public class Main {
 				
 				sumDeprecatedWithoutJavaDoc = sumDeprecatedMethods - sumDeprecatedJavaDoc;
 				
-				double percentDeprecatedMethods = ((float)sumDeprecatedMethods/sumMethods)*100; 
-				double percentDeprecatedJavaDoc = ((float)sumDeprecatedJavaDoc/sumDeprecatedMethods)*100;
-				double percentDeprecatedWithoutJavaDoc = percentDeprecatedMethods = percentDeprecatedJavaDoc;
+				double percentDeprecatedMethods = sumDeprecatedMethods*100.0/sumMethods; 
+				double percentDeprecatedJavaDoc = sumDeprecatedJavaDoc*100.0/sumDeprecatedMethods;
+				double percentDeprecatedWithoutJavaDoc = 100 - percentDeprecatedJavaDoc;
 				
 				writeReport.writeNext((file.getName() + "," + sumMethods + "," + sumDeprecatedMethods + "," + sumDeprecatedJavaDoc + "," + 
 						sumDeprecatedWithoutJavaDoc + "," + percentDeprecatedMethods +
