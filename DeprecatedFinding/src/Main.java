@@ -93,26 +93,48 @@ public class Main {
 	
 	
 	public static void recordCVSLine(PrintWriter printWriter, String type, int quantTotalMethodDeprecated, int quantDeprecatedAnnotation, int quantDeprecatedJavaDoc) {
-		printWriter.printf(type + ", " + quantTotalMethodDeprecated + ", " + quantDeprecatedAnnotation + ", " + quantDeprecatedJavaDoc);
+		printWriter.printf(type + "," + quantTotalMethodDeprecated + "," + quantDeprecatedAnnotation + "," + quantDeprecatedJavaDoc);
 	}
 		
 
 	public static void main(String[] args) throws IOException {
+		System.out.println(args[0].replaceAll(File.separator, "") + ".csv");
+		FileWriter report = new FileWriter(args[0].replaceAll(File.separator, "") + ".csv");
+		CSVWriter writeReport = new CSVWriter(report);
+		
 		for (File file : new File(args[0]).listFiles()) {
 			if (file.isDirectory()) {
 				FileWriter fileWriter = new FileWriter(file.getAbsolutePath() + ".csv");
 				CSVWriter writer = new CSVWriter(fileWriter);
 				parseFilesInDir(new File(file.getAbsolutePath()), writer);
 				writer.close();
-				//System.out.println(file.getAbsolutePath());
-			}
-			CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath() + ".csv"));
-			String[] row = null;
-			while ((row = reader.readNext()) != null) {
 				
+				
+				int sumMethods = 0;
+				int sumDeprecatedMethods = 0;
+				int sumDeprecatedJavaDoc = 0;
+				int sumDeprecatedWithoutJavaDoc = 0;
+				
+				
+				CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath() + ".csv"));
+				String[] row = null;
+				while ((row = reader.readNext()) != null) {
+					sumMethods += Integer.parseInt(row[1]);
+					sumDeprecatedMethods += Integer.parseInt(row[2]);
+					sumDeprecatedJavaDoc += Integer.parseInt(row[3]);
+				}
+				
+				sumDeprecatedWithoutJavaDoc = sumDeprecatedMethods - sumDeprecatedJavaDoc;
+				
+				writeReport.writeNext((file.getName() + "," + sumMethods + "," + sumDeprecatedMethods + "," + sumDeprecatedJavaDoc + "," + 
+						sumDeprecatedWithoutJavaDoc).split(","));
+
 			}
+			
+						
+			
 		}
-		
+		writeReport.close();
 
 	}
 
