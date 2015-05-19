@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.util.Hashtable;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -98,7 +99,6 @@ public class Main {
 		
 
 	public static void main(String[] args) throws IOException {
-		System.out.println(args[0].replaceAll(File.separator, "") + ".csv");
 		FileWriter report = new FileWriter(args[0].replaceAll(File.separator, "") + ".csv");
 		CSVWriter writeReport = new CSVWriter(report);
 		
@@ -115,7 +115,6 @@ public class Main {
 				int sumDeprecatedJavaDoc = 0;
 				int sumDeprecatedWithoutJavaDoc = 0;
 				
-				
 				CSVReader reader = new CSVReader(new FileReader(file.getAbsolutePath() + ".csv"));
 				String[] row = null;
 				while ((row = reader.readNext()) != null) {
@@ -126,12 +125,15 @@ public class Main {
 				
 				sumDeprecatedWithoutJavaDoc = sumDeprecatedMethods - sumDeprecatedJavaDoc;
 				
+				double percentDeprecatedMethods = ((float)sumDeprecatedMethods/sumMethods)*100; 
+				double percentDeprecatedJavaDoc = ((float)sumDeprecatedJavaDoc/sumDeprecatedMethods)*100;
+				double percentDeprecatedWithoutJavaDoc = percentDeprecatedMethods = percentDeprecatedJavaDoc;
+				
 				writeReport.writeNext((file.getName() + "," + sumMethods + "," + sumDeprecatedMethods + "," + sumDeprecatedJavaDoc + "," + 
-						sumDeprecatedWithoutJavaDoc).split(","));
+						sumDeprecatedWithoutJavaDoc + "," + percentDeprecatedMethods +
+						"," + percentDeprecatedJavaDoc + "," + percentDeprecatedWithoutJavaDoc).split(","));
 
 			}
-			
-						
 			
 		}
 		writeReport.close();
