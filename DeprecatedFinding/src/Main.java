@@ -101,7 +101,7 @@ public class Main {
 		FileWriter report = new FileWriter(args[0].replaceAll(File.separator, "") + ".csv");
 		new PrintWriter(report).print("sep=," + "\n" + 
 				"version,quantMethods,quantDeprecatedMethods,quantDeprecatedJavaDoc,quantDeprecatedWithoutJavaDoc,"
-				+ "%quantDeprecatedMethods, %quantDeprecatedJavaDoc,%uantDeprecatedWithoutJavaDoc\n");
+				+ "%quantDeprecatedMethods, %quantDeprecatedJavaDoc,%quantDeprecatedWithoutJavaDoc\n");
 		CSVWriter writeReport = new CSVWriter(report);
 		
 		for (File file : new File(args[0]).listFiles()) {
