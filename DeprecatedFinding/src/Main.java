@@ -38,6 +38,7 @@ public class Main {
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 
+		System.out.println("*** " + source.getAbsolutePath());
 		final CompilationUnit compilationUnit = (CompilationUnit) parser
 				.createAST(null);
 		
@@ -78,10 +79,13 @@ public class Main {
 	public static void parseFilesInDir(File file, CSVWriter writer) throws IOException {
 		
 		if (file.isFile()) {
-			String csvLineWords = parse(readFileToString(file.getAbsolutePath()), file);
-			if (file.getName().endsWith(".java") && csvLineWords != null) {
-				writer.writeNext(csvLineWords.split(","));
+			if (file.getName().endsWith(".java")) {
+				String csvLineWords = parse(readFileToString(file.getAbsolutePath()), file);
+				if (csvLineWords != null) {
+					writer.writeNext(csvLineWords.split(","));
+				}
 			}
+			
 
 		} else {
 			for (File f : file.listFiles()) {
