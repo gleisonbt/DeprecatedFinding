@@ -38,7 +38,6 @@ public class Main {
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 
-		System.out.println("*** " + source.getAbsolutePath());
 		final CompilationUnit compilationUnit = (CompilationUnit) parser
 				.createAST(null);
 		
@@ -46,8 +45,8 @@ public class Main {
 		MethodVisitor visitor = new MethodVisitor();
 		compilationUnit.accept(visitor);
 		
-		
 		if (!visitor.getMethodsDeprecated().isEmpty()) {
+			System.out.println(source.getAbsolutePath() + " - " + visitor.getMethodsDeprecatedValidJavaDoc().size());
 			return source.getAbsolutePath() + "," +
 				visitor.getMethods().size() + "," +
 				visitor.getMethodsDeprecated().size() + "," +
@@ -80,6 +79,7 @@ public class Main {
 		
 		if (file.isFile()) {
 			if (file.getName().endsWith(".java")) {
+			
 				String csvLineWords = parse(readFileToString(file.getAbsolutePath()), file);
 				if (csvLineWords != null) {
 					writer.writeNext(csvLineWords.split(","));
