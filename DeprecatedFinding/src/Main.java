@@ -38,6 +38,7 @@ public class Main {
 		parser.setResolveBindings(true);
 		parser.setBindingsRecovery(true);
 
+		//System.out.println(source.getAbsolutePath());
 		final CompilationUnit compilationUnit = (CompilationUnit) parser
 				.createAST(null);
 		
@@ -45,16 +46,16 @@ public class Main {
 		MethodVisitor visitor = new MethodVisitor();
 		compilationUnit.accept(visitor);
 		
-		if (!visitor.getMethodsDeprecated().isEmpty()) {
-			System.out.println(source.getAbsolutePath() + " - " + visitor.getMethodsDeprecatedValidJavaDoc().size());
-			return source.getAbsolutePath() + "," +
-				visitor.getMethods().size() + "," +
-				visitor.getMethodsDeprecated().size() + "," +
-				visitor.getMethodsDeprecatedJavaDoc().size() + "," +
-				(visitor.getMethodsDeprecated().size() - visitor.getMethodsDeprecatedJavaDoc().size());
-		}
+		//if (!visitor.getMethodsDeprecated().isEmpty()) {
+			//System.out.println(source.getAbsolutePath());
+			return source.getAbsolutePath() + "," +  // endereco da classe analisada
+				visitor.getMethods().size() + "," +  // quantidade de métodos
+				visitor.getMethodsDeprecated().size() + "," +  // quantidade de métodos depreciados 
+				visitor.getMethodsDeprecatedJavaDoc().size() + "," + // quantidade de méotodos depreciados com javadoc
+				(visitor.getMethodsDeprecated().size() - visitor.getMethodsDeprecatedJavaDoc().size()); // quantidade de métodos depreciados sem javadoc
+		//}
 		
-		return null;
+		//return null;
 
 	}
 
@@ -102,9 +103,37 @@ public class Main {
 		
 
 	public static void main(String[] args) throws IOException {
-		FileWriter report = new FileWriter(args[0].replaceAll(File.separator, "") + ".csv");
-		new PrintWriter(report).print("sep=," + "\n" + 
-				"version,quantMethods,quantDeprecatedMethods,quantDeprecatedJavaDoc,quantDeprecatedWithoutJavaDoc,"
+		FileReader arq = new FileReader("projects_filtred_release.txt");
+		BufferedReader lerArq = new BufferedReader(arq);
+		
+		File lastVersionFile = new File("LastVersion");
+		
+		File cvsProjectLastVersion = new File("CSVProjectsLastVersion");
+		cvsProjectLastVersion.mkdirs();
+		
+		
+		String projectName = lerArq.readLine();
+		while (projectName != null) {
+			System.out.println(projectName);
+			projectName = lerArq.readLine();
+			//System.out.println(lastVersionFile.getAbsolutePath() + "" + File.separatorChar + projectName);
+			File dirProject = new File(lastVersionFile.getAbsolutePath() + "" + File.separatorChar + projectName);
+			
+			CSVWriter writer = new CSVWriter(new FileWriter(cvsProjectLastVersion.getAbsolutePath() + File.separatorChar + projectName + ".csv"));
+			try {
+				parseFilesInDir(dirProject, writer);
+			} catch (Exception e) {
+				System.err.println("dont generate " + dirProject);
+			}
+			
+			writer.close();
+			
+		}
+		
+		//System.out.println(new File("LaspathnametVersion").exists());
+		
+		/*FileWriter report = new FileWriter(args[0].replaceAll(File.separator, "") + ".csv");
+		new PrintWriter(report).print("version,quantMethods,quantDeprecatedMethods,quantDeprecatedJavaDoc,quantDeprecatedWithoutJavaDoc,"
 				+ "%quantDeprecatedMethods, %quantDeprecatedJavaDoc,%quantDeprecatedWithoutJavaDoc\n");
 		CSVWriter writeReport = new CSVWriter(report);
 		
@@ -112,6 +141,7 @@ public class Main {
 			if (file.isDirectory()) {
 				FileWriter fileWriter = new FileWriter(file.getAbsolutePath() + ".csv");
 				CSVWriter writer = new CSVWriter(fileWriter);
+				//System.out.println(file.getAbsolutePath());
 				parseFilesInDir(new File(file.getAbsolutePath()), writer);
 				writer.close();
 				
@@ -142,7 +172,7 @@ public class Main {
 			}
 			
 		}
-		writeReport.close();
+		writeReport.close();*/
 
 	}
 
