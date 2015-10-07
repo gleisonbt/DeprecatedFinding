@@ -49,6 +49,7 @@ public class Main {
 		compilationUnit.accept(visitorMethod);
 		
 		return source.getAbsolutePath() + "," +  // endereco da classe analisada
+		
 			visitorField.getNumberFields() + "," + // numero de fields
 			visitorField.getNumberDeprecateds() + "," + // numero de fields depreciados
 			visitorField.getNumberDeprecatedsWithAnnotation() + "," + //numero de fields depreciados sem mensagem
@@ -133,7 +134,7 @@ public class Main {
 		String project = readFile.readLine();
 		while (project != null) {
 			
-			FileWriter csvFieldProject = new FileWriter(project + File.separatorChar + project + ".csv");
+			FileWriter csvFieldProject = new FileWriter(project + File.separatorChar + project + "_external.csv");
 			PrintWriter writeCSVFieldProject = new PrintWriter(csvFieldProject);
 			
 			parseFilesInDir(new File(project), writeCSVFieldProject);

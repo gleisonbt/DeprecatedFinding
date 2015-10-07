@@ -1,5 +1,6 @@
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -21,7 +22,16 @@ public class TypeDeclarationVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		if (node.resolveBinding() != null && node.resolveBinding().isDeprecated()) {
+		boolean privateModifier = false;
+		for (Object modifier : node.modifiers()) {
+			if (modifier.getClass().equals(Modifier.class) && ((Modifier)modifier).isPrivate()) {
+				privateModifier = true;
+				break;
+			}
+			
+		}
+		
+		if (!privateModifier && node.resolveBinding() != null && node.resolveBinding().isDeprecated()) {
 			numberDeprecateds++;
 			if (containsAnnotation(node, "Deprecated")) {
 				numberDeprecatedsWithAnnotation++;
