@@ -16,7 +16,9 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 
 public class Main {
 
-	public static String parse(String str, File source) throws IOException {
+	public static int[] valuesTotal = {0,0,0,0,0,0}; 
+	
+	public static int[] parse(String str, File source) throws IOException {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setSource(str.toCharArray());
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -48,8 +50,16 @@ public class Main {
 		compilationUnit.accept(visitorType);
 		compilationUnit.accept(visitorMethod);
 		
-		return source.getAbsolutePath() + "," +  // endereco da classe analisada
+		int[] retorno = {visitorField.getNumberDeprecatedWithRelevantMessages() , 
+				visitorType.getNumberDeprecatedWithRelevantMessages() , 
+				visitorMethod.getNumberDeprecatedWithRelevantMessages(), visitorField.getNumberDeprecateds() , 
+							visitorType.getNumberDeprecateds() , 
+							visitorMethod.getNumberDeprecateds()};
+		return retorno;
 		
+		//return source.getAbsolutePath() + "," +  // endereco da classe analisada
+
+        	/*	
 			visitorField.getNumberFields() + "," + // numero de fields
 			visitorField.getNumberDeprecateds() + "," + // numero de fields depreciados
 			visitorField.getNumberDeprecatedsWithAnnotation() + "," + //numero de fields depreciados sem mensagem
@@ -88,6 +98,7 @@ public class Main {
 			visitorMethod.getNumberLink() + "," + // number link
 			visitorMethod.getNumberSee() + "," + // number see
 			visitorMethod.getNumberCode(); // number code
+		*/
 	}
 	
 	public static String readFileToString(String filePath) throws IOException {
@@ -107,42 +118,46 @@ public class Main {
 		return fileData.toString();
 	}
 	
-	public static void parseFilesInDir(File file, PrintWriter writeCSVFieldProject) throws IOException {
-		
+	public static void parseFilesInDir(File file, int[] values) throws IOException {
 		if (file.isFile()) {
 			if (file.getName().endsWith(".java")) {
 				
-				String line = parse(readFileToString(file.getAbsolutePath()), file);
-				if (line != null) {
-					writeCSVFieldProject.println(line);
-					System.out.println(line);
-				}
+				int[] line = parse(readFileToString(file.getAbsolutePath()), file);
+				//System.out.println(file.getAbsolutePath());
+				//System.out.println(line[0] + ", " + line[1] + ", " + line[2] + ", " + line[3] + " , " + line[4] + ", " + line[5]);
+				values[0] += line[0];
+				values[1] += line[1];
+				values[2] += line[2];
+				values[3] += line[3];
+				values[4] += line[4];
+				values[5] += line[5];
+				
+				//System.out.println(values[0] + ", " + values[1] + ", " + values[2] + ", " + values[3] + " , " + values[4] + ", " + values[5]);
+				//if (line != null) {
+					//writeCSVFieldProject.println(line);
+					//System.out.println(line);
+				//}
 			}
 		} else {
 			for (File f : file.listFiles()) {
-				parseFilesInDir(f, writeCSVFieldProject);
+				parseFilesInDir(f, valuesTotal);
 			}
 		}
 	}
 	
 	public static void main(String[] args) throws IOException {
-		//receive the projects list (args[0]) 
 		
-		FileReader fileProjects = new FileReader(args[0]);
-		BufferedReader readFile = new BufferedReader(fileProjects);
 		
-		String project = readFile.readLine();
-		while (project != null) {
-			
-			FileWriter csvFieldProject = new FileWriter(project + File.separatorChar + project + "_external.csv");
-			PrintWriter writeCSVFieldProject = new PrintWriter(csvFieldProject);
-			
-			parseFilesInDir(new File(project), writeCSVFieldProject);
-			
-			csvFieldProject.close();
-			
-			project = readFile.readLine();
+		parseFilesInDir(new File(args[0]), valuesTotal);
+		float totalReplacementMessages = valuesTotal[0] + valuesTotal[1] + valuesTotal[2];
+		float totalDeprecated = valuesTotal[3] + valuesTotal[4] + valuesTotal[5];
+		if (totalDeprecated == 0) {
+			System.out.println(totalReplacementMessages + "," + totalDeprecated + "," + 0);
+		} else {
+			System.out.println(totalReplacementMessages + "," + totalDeprecated + "," + (totalReplacementMessages * 100/totalDeprecated));
 		}
+		
+		
 
 	}
 
